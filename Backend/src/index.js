@@ -15,6 +15,8 @@ app.use(express.json());
 
 //RUTAS
 app.use('/api/inventario',require('./routes/inventario.route'));
+app.use('/api/entrada',require('./routes/entrada.route'));
+app.use('/api/salida',require('./routes/salida.route'));
 
 //INICIAR EL SERVIDOR
 app.listen(app.get('port'), () =>{

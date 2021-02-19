@@ -2,9 +2,9 @@ const pool = require("../database");
 const inventarioModel = require('../models/inventario');
 
 
-//OBTENER EL LITADO DE TODAS LAS ENTRADAS DE ALMACÉN
-exports.getEntradas = function (req, res) {
-    let query = 'SELECT *FROM entrada';
+//OBTENER EL LITADO DE TODAS LAS SALIDAS DE INVENTARIO
+exports.getSalidas = function (req, res) {
+    let query = 'SELECT *FROM salida';
     pool.query(query, function (err, result) {
         if (result.length > 0) {
             res.status(200).json({
@@ -14,7 +14,7 @@ exports.getEntradas = function (req, res) {
         } 
         else if((result.length == 0)){
             res.status(404).json({
-                mensaje: "No existen registros de entrada de almacén en la base de datos.",
+                mensaje: "No existen registros de salida de almacén en la base de datos.",
             });
         }
         else if (err) {
@@ -26,14 +26,14 @@ exports.getEntradas = function (req, res) {
     });
 };
 
-//OBTENER UNA ENTRADA DE ALMACÉN POR SU ID
-exports.getEntradaById = function (req, res) {
-    const {idEntrada} = req.params;
+//OBTENER UNA SALIDA DE ALMACÉN POR SU ID
+exports.getSalidaById = function (req, res) {
+    const {idSalida} = req.params;
     console.log(req.params)
 
-    let query = 'SELECT *FROM entrada WHERE idEntrada=?';
+    let query = 'SELECT *FROM salida WHERE idSalida=?';
 
-    pool.query(query,[idEntrada] ,function (err, result) {
+    pool.query(query,[idSalida] ,function (err, result) {
         if (result.length > 0) {
             res.status(200).json({
                 mensaje: "OK",
@@ -42,7 +42,7 @@ exports.getEntradaById = function (req, res) {
         } 
         else if((result.length == 0)){
             res.status(404).json({
-                mensaje: "No existe el registro de entrada de almacén con id: "+idEntrada+" en la base de datos.",
+                mensaje: "No existe el registro de salida de almacén con id: "+idSalida+" en la base de datos.",
             });
         }
         else if (err) {
@@ -55,13 +55,13 @@ exports.getEntradaById = function (req, res) {
     });
 };
 
-//AÑADIR UN PRODCUTO AL INVENTARIO
-exports.addEntrada =async (req,res)=>{
-    let query = 'INSERT INTO entrada set ?';
+//AÑADIR UNA SALIDA DE ALMACÉN
+exports.addSalida =async (req,res)=>{
+    let query = 'INSERT INTO salida set ?';
     let requestBody = {
         descripcion  : req.body.descripcion,
         idProducto   : req.body.idProducto,
-        fechaEntrada : req.body.fechaEntrada,
+        fechaSalida  : req.body.fechaSalida,
         cantidad     : req.body.cantidad,
     };
 
@@ -70,59 +70,59 @@ exports.addEntrada =async (req,res)=>{
             console.log(result);
             console.log(result.lenght);
             res.status(200).json({
-                mensaje: "Entrada de almacén registrada correctamente.",
+                mensaje: "Salida de almacén registrada correctamente.",
             });
         } else {
             res.status(400).json({
-                mensaje: "Ocurrio un error al registrar la entrada de almacén.",
+                mensaje: "Ocurrio un error al registrar la salida de almacén.",
                 detalles: err
             });
         }
     });
 }
 
-//MODIFICAR UNA ENTRADA DE ALMACÉN
-exports.editEntrada = function (req, res) {
-    const {idEntrada} = req.params;
+//MODIFICAR UN SALIDA DE ALMACÉM
+exports.editSalida = function (req, res) {
+    const {idSalida} = req.params;
     let requestBody = {
         descripcion  : req.body.descripcion,
         idProducto   : req.body.idProducto,
-        fechaEntrada : req.body.fechaEntrada,
+        fechaSalida : req.body.fechaSalida,
         cantidad     : req.body.cantidad,
     };
 
-    let query = 'UPDATE entrada SET ? where idEntrada=?';
+    let query = 'UPDATE salida SET ? where idSalida=?';
 
-    pool.query(query,[requestBody,idEntrada] ,function (err, result) {
+    pool.query(query,[requestBody,idSalida] ,function (err, result) {
         if (result) {
             console.log(result);
             console.log(result.lenght);
             res.status(200).json({
-                mensaje: "Se modificó correctamente la entrada de almacén con id: "+idEntrada,
+                mensaje: "Se modificó correctamente la salida de almacén con id: "+idSalida,
             });
         } else {
             res.status(400).json({
-                mensaje: "Ocurrio un error al registrar la entrada de almacén.",
+                mensaje: "Ocurrio un error al modificar la salida de almacén.",
                 detalles: err
             });
         }
     });
 }
 
-//ELIMINAR UNA ENTRADA DE ALMACEN
-exports.deleteEntrada = function (req, res) {
+//ELIMINAR UNA SALIDA DE ALMACÉM
+exports.deleteSalida = function (req, res) {
     console.log(req.params)
-    const {idEntrada} = req.params;
-    let query = 'DELETE FROM entrada WHERE idEntrada = ?';
+    const {idSalida} = req.params;
+    let query = 'DELETE FROM salida WHERE idSalida = ?';
 
-    pool.query(query,[idEntrada] ,function (err, result) {
+    pool.query(query,[idSalida] ,function (err, result) {
         if (result) {
             res.status(200).json({
-                mensaje: "Se eliminó la entrada de almacén con id: "+idEntrada,
+                mensaje: "Se eliminó la salida de almacén con id: "+idSalida,
             });
         } else {
             res.status(400).json({
-                mensaje: "Ocurrio un error al eliminar la entrada de almacén.",
+                mensaje: "Ocurrio un error al eliminar la salida de almacén.",
                 detalles: err
             });
         }

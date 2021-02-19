@@ -1,10 +1,10 @@
 const router = require('express').Router();
 const entradaController = require('../controllers/entrada.controller');
 
-router.get('/getEntrada',entradaController.getEntradas);
-router.get('/getProductoById/:idProducto',entradaController.getEntradaById);
-router.post('/addProducto',entradaController.addEntrada);
-router.put('/editProducto/:idProducto',entradaController.editEntrada);
-router.delete('/deleteProducto/:idProducto',entradaController.deleteEntrada);
+router.get('/getEntradas',entradaController.getEntradas);
+router.get('/getEntradaById/:idEntrada',entradaController.getEntradaById);
+router.post('/addEntrada',entradaController.addEntrada);
+router.put('/editEntrada/:idEntrada',entradaController.editEntrada);
+router.delete('/deleteEntrada/:idEntrada',entradaController.deleteEntrada);
 
 module.exports = router;
