@@ -2,16 +2,21 @@ const pool = require("../database");
 const {tipoTazaModel} = require('../models/tipo-taza');
 
 
-//OBTENER EL LITADO DE TODOS LOS TIPO DE TAZAS POR SU CALIDAD
+//Obtener el listado de todos los tipos de taza por su calidad
 exports.getTiposTaza = function (req, res) {
+    //Query para obtener todos los tipos de taza
     let query = 'SELECT *FROM tipo_taza';
+
+    //Se inicia la consulta
     pool.query(query, function (err, result) {
+         //Comprobamos de que exista un resultado, si existe, lo retornaos
         if (result.length > 0) {
             res.status(200).json({
                 mensaje: "OK",
                 detalles: result,
             });
         } 
+        //Si no hay resultado retornamos el error
         else if((result.length == 0)){
             res.status(404).json({
                 mensaje: "No existen registros en la base de datos.",
@@ -26,20 +31,24 @@ exports.getTiposTaza = function (req, res) {
     });
 };
 
-//OBTENER UN TIPO DE TAZA POR SU ID
+//Obtener un tipo de taza por su ID 
 exports.getTipoTazaById = function (req, res) {
+    //Obtnemos el ID
     const {idTipoTaza} = req.params;
-    console.log(req.params)
 
+    //Query para obtener un tipo de taza por su ID
     let query = 'SELECT *FROM tipo_taza WHERE idTipoTaza=?';
 
+    //Se inicia la consulta
     pool.query(query,[idTipoTaza] ,function (err, result) {
+        //Comprobamos de que exista un resultado, si existe, lo retornaos
         if (result.length > 0) {
             res.status(200).json({
                 mensaje: "OK",
                 detalles: result,
             });
         } 
+        //Si no hay resultado retornamos el error
         else if((result.length == 0)){
             res.status(404).json({
                 mensaje: "No existe el registro con id: "+idTipoTaza+" en la base de datos.",
@@ -55,14 +64,15 @@ exports.getTipoTazaById = function (req, res) {
     });
 };
 
-//AÑADIR UN TIPO DE TAZA
+//Añadir un nuevo tipo de taza
 exports.addTipoTaza =async (req,res)=>{
+    //Query para agregar un nuevo tipo de taza
     let query = 'INSERT INTO tipo_taza set ?';
     let requestBody = {
         descripcion: req.body.tipoTaza.descripcion,
     };
 
-    //VALIDAMOS EL REQUEST CON JOI
+    //Validamos el request con joi
     try{
         await tipoTazaModel.validateAsync(requestBody);
     }catch(error){
@@ -72,12 +82,15 @@ exports.addTipoTaza =async (req,res)=>{
         });
     }
 
+    //Iniciamos la consulta
     pool.query(query,[requestBody] ,function (err, result) {
+        //Comprobamos de que exista un resultado, si existe, lo retorna
         if (result) {
             res.status(200).json({
                 mensaje: "OK",
                 detalles: "Tipo de taza registrado correctamente.",
             });
+            //Si no hay resultado retornamos el error
         } else {
             res.status(400).json({
                 mensaje: "Ocurrio un error al registrar el tipo de taza.",
@@ -87,16 +100,16 @@ exports.addTipoTaza =async (req,res)=>{
     });
 }
 
-//MODIFICAR UN TIPO DE TAZA
+//Modificar un tipo de taza
 exports.editTipoTaza = async (req, res)=> {
-    //OBTENEMOS EL ID QUE DESEAMOS MODIFICAR
+    //Obtenemos el ID del tipo de taza que queremos modificar
     const {idTipoTaza} = req.params;
 
     let requestBody = {
         descripcion: req.body.tipoTaza.descripcion,
     };
 
-    //VALIDAMOS EL REQUEST CON JOI
+    //Validamos el request con joi
     try{
         await tipoTazaModel.validateAsync(requestBody);
     }catch(error){
@@ -106,16 +119,18 @@ exports.editTipoTaza = async (req, res)=> {
         });
     }
 
-    //CONSULTA PARA MODIFICAR UN TIPO DE TAZA
+    //Consulta para modificar un tipo de taza
     let query = 'UPDATE tipo_taza SET ? where idTipoTaza=?';
 
-    //SE INICIA LA CONSULTA
+    //Iniciamos la consulta
     pool.query(query,[requestBody,idTipoTaza] ,function (err, result) {
         if (result) {
+            //Comprobamos de que exista un resultado, si existe, lo retorna
             res.status(200).json({
                 mensaje: "OK",
                 detalles: "Se modificó correctamente el tipo de taza con id: "+idTipoTaza,
             });
+             //Si no hay resultado retornamos el error
         } else {
             res.status(400).json({
                 mensaje: "Ocurrio un error al modificar el tipo de taza.",
@@ -125,18 +140,23 @@ exports.editTipoTaza = async (req, res)=> {
     });
 }
 
-//ELIMINAR TIPO DE TAZA
+//Eliminar un tipo de taza
 exports.deleteTipoTaza = function (req, res) {
-    console.log(req.params)
+    //Obtenemos el ID del tipo de taza que queremos eliminar
     const {idTipoTaza} = req.params;
+
+    //Query para eliminar un tipo de taza
     let query = 'DELETE FROM tipo_taza WHERE idTipoTaza = ?';
 
+    //Iniciamos la consulta
     pool.query(query,[idTipoTaza] ,function (err, result) {
+        //Comprobamos de que exista un resultado, si existe, lo retorna
         if (result) {
             res.status(200).json({
                 mensaje: "OK",
                 detalles: "Se eliminó el tipo de taza con id: "+idTipoTaza,
             });
+            //Si no hay resultado retornamos el error
         } else {
             res.status(400).json({
                 mensaje: "Ocurrio un error al eliminar el tipo de taza.",

@@ -1,20 +1,25 @@
 const pool = require("../database");
 const {salidaModel} = require('../models/salida');
 
-
+//TIPOS DE TAZA
 //TIPO DE TAZA 1 : CALIDAD ALTA
 //TIPO DE TAZA 2 : CALIDAD BAJA
 
-//OBTENER EL LISTADO DE TODAS LAS SALIDAS DE INVENTARIO
+//Obtener el listado de todas las salidas de inventario
 exports.getSalidas = function (req, res) {
+    //Query para obtener todas las salidas de almacén
     let query = 'SELECT *FROM salida';
+
+    //Se inicia la consulta
     pool.query(query, function (err, result) {
+        //Comprobamos de que exista un resultado, si existe, lo retornaos
         if (result.length > 0) {
             res.status(200).json({
                 mensaje: "OK",
                 detalles: result,
             });
         } 
+        //Si no hay resultado retornamos el error
         else if((result.length == 0)){
             res.status(404).json({
                 mensaje: "No existen registros de salida de almacén en la base de datos.",
@@ -29,18 +34,24 @@ exports.getSalidas = function (req, res) {
     });
 };
 
-//OBTENER UNA SALIDA DE ALMACÉN POR SU ID
+//Obtener una salida de almacén por su id
 exports.getSalidaById = function (req, res) {
+    //Obenemos el id de la salida de almacén
     const {idSalida} = req.params;
+
+    //Query para obtener una salida de almacén por su ID
     let query = 'SELECT *FROM salida WHERE idSalida=?';
 
+    //Se inicia la consulta
     pool.query(query,[idSalida] ,function (err, result) {
+         //Comprobamos de que exista un resultado, si existe, lo retornaos
         if (result.length > 0) {
             res.status(200).json({
                 mensaje: "OK",
                 detalles: result,
             });
-        } 
+        }
+        //Si no hay resultado retornamos el error 
         else if((result.length == 0)){
             res.status(404).json({
                 mensaje: "No existe el registro de salida de almacén con id: "+idSalida+" en la base de datos.",
@@ -56,8 +67,9 @@ exports.getSalidaById = function (req, res) {
     });
 };
 
-//PROCESO DE SALIDA DE ALMACÉN Y RESTAR  STOCK DEL INVENTARIO.
+//Proceso de salida de almacén y resta de stock del inventario
 exports.addSalida = async (req,res)=>{
+    //Query para agregar una salida de almacén
     let query = 'INSERT INTO salida set ?';
     let requestBody = {
         descripcion  : req.body.salida.descripcion,
@@ -66,7 +78,7 @@ exports.addSalida = async (req,res)=>{
         cantidad     : req.body.salida.cantidad,
     };
 
-      //VALIDAMOS EL REQUEST CON JOI
+    //Validamos el request con joi
     try{
         await salidaModel.validateAsync(requestBody);
     }catch(error){
@@ -76,21 +88,25 @@ exports.addSalida = async (req,res)=>{
         });
     }
 
-    let cantidad= req.body.salida.cantidad;//OBTENER LA CANTIDAD DE TAZAS QUE SALEN DE ALMACÉN PARA RESTARLAS DEL INVENTARIO
-    let idTipoTaza  = req.body.salida.idTipoTaza;/*OBTENER EL TIPO DE TAZA PARA DETERMINAR CUANTAS SE REGALARÁN EN CASO DE QUE CUMPLA
-                                                   CON LOS CRITERIOS DE LA PROMCIÓN */
+    let cantidad= req.body.salida.cantidad;//Obtenemos la cantidad de tazas que salen de almacén para luego restarlas del inventario
+    let idTipoTaza  = req.body.salida.idTipoTaza;//Obtener el tipo de taza para determinar cuantas se regalarán en caso de que cumpla con los criterios de la promoción
 
-    let tazasRegaladas;//PARA ALMACENAR EL NÚMERO DE TAZAS A REGALAR
-    let idProducto= req.body.salida.idProducto;//PARA ALMACENAR EL ID DEL PRODUCTO DEL INVENTARIO PARA RESTARLE LA SALIDA
-    let idProductoPromocion;//PARA OTBENER EL ID DEL PRODUCTO QUE SE PUEDE REGALAR EN BASE AL QUE TENGA MAYOR STOCK
-    let stockProductoPromocion;//PARA OTBENER EL STOCK DEL PRODUCTO QUE SE PUEDE REGALAR.
+    let tazasRegaladas;//Para almacenar el número de tazas a regalar
+    let idProducto= req.body.salida.idProducto;//Para almacenar el ID del producto del inventario para restarle las unidades que salieron de almacén
+    let idProductoPromocion;//Para obtener el ID del producto que se pueda regalar en base al que tenga mayor stock
+    let stockProductoPromocion;//Para obtener el stock del producto que se puede regalar
 
+    //Se inicia la consulta
     pool.query(query,[requestBody] ,function (err, result) {
         if (result) {
+            //Comprobamos de que exista un resultado, si existe, continuamos con el proceso.
 
-            //EMPIEZA CONSULTA PARA RESTAR DEL ALMACÉN LA CANTIDAD DE PRODUCTO QUE SALIÓ.
+            //Query para modificar el sotck del producto que salió de almacén
             let queryUpdateInventario = 'UPDATE inventario set stock = stock - ? WHERE idProducto = ?';
+
+            //Se inicia la consulta
             pool.query(queryUpdateInventario,[cantidad,idProducto],function (err) {
+                //Comprobamos si existe un error, si existe, lo retornaoms.
                 if(err){
                     pool.rollback(()=>{
                         console.log(err.message);
@@ -100,24 +116,30 @@ exports.addSalida = async (req,res)=>{
                         detalles: err
                     });
                 }
+                //Si no hay error continuamos con el proceso
             });
+
 
             let auxModTazas=Math.trunc((cantidad/=10));
             if(auxModTazas>=1){
-                //COMPROBAR SI SON TAZAS DE CALIDAD ALTA
+                //Comprobamos si son tazas de alta calidad
                 if(idTipoTaza==1){
+                    //Asignamos el número de tazas a regalar
                     tazasRegaladas=3*auxModTazas;
-                //COMPROBAR SI SON TAZAS DE CALIDAD BAJA
+                //Comprobamos si son tazas de baja calidad
                 }else if(idTipoTaza==2){
+                    //Asignamos el número de tazas a regalar
                     tazasRegaladas=2*auxModTazas;
                 }
 
-                //EMPIEZA QUERY PARA OBTENER DEL INVENTARIO EL PRODUCTO DE CÁLIDAD BAJA PARA APLICAR LA PROMOCIÓN
-                //CON ESTA CONSULTA OBTENDREMOS ID DEL PRODUCTO DE BAJA CALIDAD CON MAYOR STOCK PARA APLICAR LA PROMCIÓN
+
+                //Query para obtener el ID del producto y el stock de los articulos de baja calidad, ordernados de mayor a menor con base al stock, con limite de 1
                 let querySelectInventarioCalidadBaja="SELECT stock, idProducto FROM inventario WHERE tipoTaza=2 ORDER BY stock DESC LIMIT 1";
                 
+                //Se inicia la consulta
                 pool.query(querySelectInventarioCalidadBaja,function (err,result) {
                     if(err){
+                        //Comprobamos si existe un error, si existe, lo retornaoms.
                         pool.rollback(()=>{
                             console.log(err.message);
                         })
@@ -126,14 +148,18 @@ exports.addSalida = async (req,res)=>{
                             detalles: err
                         });
                     }else{
+                         //Si no hay error continuamos con el proceso
                         stockProductoPromocion= result[0].stock;
                         idProductoPromocion=result[0].idProducto;
 
-                         //COMPRBAMOS QUE EL STOCK DEL PRODCUTO QUE SE REGALA EN LA PROMOCIÓN SEA MAYOR A LA CANTIDAD DE TAZAS A REGALAR.
+                        //Comprobamos que el stock del producto que se regala en la promoción sea mayor a la cantidad de tazas a regalar.
                         if (stockProductoPromocion>tazasRegaladas){
-                            //CON ESTA CONSULTA RESTAMOS STOCK DEL PRODUCTO QUE SE REGALÁ POR PROMOCIÓN
+                            //Query para restar el stock del producto que se regala por la promoción
                             let queryUpdateStockProductoPromocion="UPDATE inventario SET stock = stock -? WHERE idProducto = ?";
+
+                            //Se inicia la consulta
                             pool.query(queryUpdateStockProductoPromocion,[tazasRegaladas,idProductoPromocion],function (err) {
+                                //Comprobamos si existe un error, si existe, lo retornaoms.
                                 if(err){
                                     pool.rollback(()=>{
                                         console.log(err.message);
@@ -143,12 +169,14 @@ exports.addSalida = async (req,res)=>{
                                         detalles: err
                                     });
                                 }else{
+                                    //Si no hay error continuamos con el proceso
                                     res.status(200).json({
                                         mensaje: "OK",
                                         detalles: "Salida de almacén registrada correctamente. Se aplicó la promoción con "+tazasRegaladas+" tazas de baja calidad regaladas.",
                                     });
                                 }
                             });
+                            //Si el stock del producto que se regala en la promoción es menor a la cantidad de tazas a regalar retornamos lo siguiente.
                         }else{
                             res.status(200).json({
                                 mensaje: "OK",
@@ -157,7 +185,7 @@ exports.addSalida = async (req,res)=>{
                         }
                     }
                 });
-                //EN CASO DE QUE NO APLIQUE LA PROMOCIÓN ENVIAMOS ESTE MENSAJE
+                //En caso de que no se aplique alguna promoción retornamos lo siguiente
             }else{
                 res.status(200).json({
                     mensaje: "OK",

@@ -2,16 +2,21 @@ const pool = require("../database");
 const {entradaModel} = require('../models/entrada');
 
 
-//OBTENER EL LITADO DE TODAS LAS ENTRADAS DE ALMACÉN
+//Obtener el listado de todas las entradas a almacén
 exports.getEntradas = function (req, res) {
+    //Query para obtener todas las entradas de almacén
     let query = 'SELECT *FROM entrada';
+
+    //Se inicia la consulta
     pool.query(query, function (err, result) {
+        //Comprobamos de que exista un resultado, si existe, lo retornaos
         if (result.length > 0) {
             res.status(200).json({
                 mensaje: "OK",
                 detalles: result,
             });
         } 
+        //Si no hay resultado retornamos el error
         else if((result.length == 0)){
             res.status(404).json({
                 mensaje: "No existen registros de entrada de almacén en la base de datos.",
@@ -26,20 +31,24 @@ exports.getEntradas = function (req, res) {
     });
 };
 
-//OBTENER UNA ENTRADA DE ALMACÉN POR SU ID
+//Obtener una entrada de almacén por su id
 exports.getEntradaById = function (req, res) {
+    //Obtenemos el ID de la entrada que queremos modificar
     const {idEntrada} = req.params;
-    console.log(req.params)
 
+    //Query para obtener entrada por id
     let query = 'SELECT *FROM entrada WHERE idEntrada=?';
 
+    //Se inicia la consulta
     pool.query(query,[idEntrada] ,function (err, result) {
+        //Comprobamos de que exista un resultado, si existe, lo retornaos
         if (result.length > 0) {
             res.status(200).json({
                 mensaje: "OK",
                 detalles: result,
             });
         } 
+        //Si no hay resultado retornamos el error
         else if((result.length == 0)){
             res.status(404).json({
                 mensaje: "No existe el registro de entrada de almacén con id: "+idEntrada+" en la base de datos.",
@@ -55,8 +64,9 @@ exports.getEntradaById = function (req, res) {
     });
 };
 
-//PROCESO DE ENTRADA AL INVENTARIO Y SUMA AL INVENTARIO
+//Proceso de entrada a inventario y suma de stock
 exports.addEntrada =async (req,res)=>{
+    //Query para insertar una entrada de almacén
     let query = 'INSERT INTO entrada set ?';
     let requestBody = {
         descripcion  : req.body.entrada.descripcion,
@@ -64,8 +74,7 @@ exports.addEntrada =async (req,res)=>{
         fechaEntrada : req.body.entrada.fechaEntrada,
         cantidad     : req.body.entrada.cantidad,
     };
-
-    //VALIDAMOS EL REQUEST CON JOI
+    //Validamos el request con joi
     try{
         await entradaModel.validateAsync(requestBody);
     }catch(error){
@@ -75,15 +84,17 @@ exports.addEntrada =async (req,res)=>{
         });
     }
 
+    
+    let cantidad= req.body.entrada.cantidad;//Obtenemos la cantidad de tazas que entran a almacén para luego sumar el stock al inventario
+    let idProducto= req.body.entrada.idProducto;//Obtenemos el ID del producto que entra a almacén para luego sumarle la cantidad en la tabla inventario
 
-    let cantidad= req.body.entrada.cantidad;//OBTENER LA CANTIDAD DE TAZAS QUE ENTRAN A ALMACÉN PARA SUMARLAS AL INVENTARIO
-    let idProducto= req.body.entrada.idProducto;//OBTENER EL ID DEL PRODCUTO QUE ENTRA AL ALMACÉN PARA SUMARLE LA CANTIDAD EN LA TABLA INVENTARIO.
-
+    //Se inicia la consulta
     pool.query(query,[requestBody] ,function (err, result) {
         if (result) {
-            //EMPIEZA CONSULTA PARA SUMAR AL ALMACÉN LA CANTIDAD DE PRODUCTO ENTRÓ.
+            //Query para sumar al almacén las unidades que entrarón
             let queryUpdateInventario = 'UPDATE inventario set stock = stock + ? WHERE idProducto = ?';
             pool.query(queryUpdateInventario,[cantidad,idProducto],function (err) {
+                //Comprobamos si no existen errores, si existen, lo retornamos
                 if(err){
                     pool.rollback(()=>{
                         console.log(err.message);
@@ -93,6 +104,7 @@ exports.addEntrada =async (req,res)=>{
                         detalles: err
                     });
                 }else{
+                    //Si no existen errores, entonces registro exitoso.
                     res.status(200).json({
                         mensaje: "OK",
                         detalles: "Entrada de almacén registrada correctamente. Se registraron "+cantidad+" Unidades",

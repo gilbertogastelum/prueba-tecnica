@@ -13,6 +13,7 @@ app.set('port', process.env.PORT || 3000);
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors());
+
 //RUTAS
 app.use('/api/inventario',require('./routes/inventario.route'));
 app.use('/api/entrada',require('./routes/entrada.route'));
