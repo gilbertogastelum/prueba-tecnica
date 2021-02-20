@@ -12,7 +12,7 @@ npm install
 ```
 Y lo iniciamos con el comando 
 ```
-npm run dev
+npm run server
 ```
 
 ## Requisitos Frotnend
