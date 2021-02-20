@@ -16,10 +16,10 @@ declare let $: any;
 })
 export class SalidasComponent implements OnInit {
   salidaMayor:Boolean=false; //PARA OBTENER SI LA CANTIDAD DE SALIDA ES MAYOR AL SOTCK DISPONIBLE
-  salidaForm!: FormGroup;
+  salidaForm: FormGroup;
 
-  private paginator!: MatPaginator;
-  private sort!: MatSort;
+  private paginator: MatPaginator;
+  private sort: MatSort;
   inventario: Inventario[];//PARA MOSTRAR TODOS LOS PRODUCTOS DEL INVENTARIO
   productoSeleccionado:any;//PARA OBTENER EL PRODUCTO SELECCIONADO EN LA SALIDA DE ALMACÉN
   cantidadSalida:number;//PARA OBTENER LA CANTIDAD DE SALIDA DEL PRODUCO DE ALMACÉM

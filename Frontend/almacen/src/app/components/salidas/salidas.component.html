@@ -16,7 +16,7 @@
   <div class="mat-elevation-z8">
   <mat-table #table  matSort [dataSource]="dataSource_Salidas">
 
-    <!-- COLUMNA DESCRIPCIÓN-->
+    <!-- COLUMNA IDENTIFICADOR-->
     <ng-container matColumnDef="idSalida">
       <mat-header-cell *matHeaderCellDef mat-sort-header> Id. </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{element.idSalida}} </mat-cell>
@@ -45,7 +45,7 @@
 
     <!-- COLUMNA CANTIDAD -->
     <ng-container matColumnDef="cantidad">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Cantidad </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Cantidad(pz) </mat-header-cell>
       <<mat-cell *matCellDef="let element"> {{element.cantidad}} </mat-cell>>
     </ng-container>
 
@@ -112,7 +112,7 @@
         <div class="row">
           <div class="col">
             <mat-form-field  style="width: 100%;"  appearance="outline">
-              <mat-label>Cantidad</mat-label>
+              <mat-label>Cantidad (pz)</mat-label>
               <input matInput placeholder="Cantidad" [(ngModel)]="cantidadSalida" formControlName="cantidad"  min=1 type="number">
             </mat-form-field>
           </div>

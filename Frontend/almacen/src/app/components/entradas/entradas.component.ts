@@ -7,6 +7,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ToastrService } from 'ngx-toastr';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 declare let $: any;
 
@@ -28,16 +29,16 @@ export class EntradasComponent implements OnInit {
   dataSource_Entradas = new MatTableDataSource<any>();
 
    //SORT PARA LA TABLA DE INVENTARIO
-   @ViewChild(MatSort, { static: false }) set matSort(ms: MatSort) {
+  @ViewChild(MatSort, { static: false }) set matSort(ms: MatSort) {
     this.sort = ms;
     this.dataSource_Entradas.sort = this.sort;
-}
+  }
 
-//PAGINACIÓN PARA LA TABLA DE INVENTARIO
-@ViewChild(MatPaginator, { static: false }) set matPaginator(mp: MatPaginator) {
-  this.paginator = mp;
-  this.dataSource_Entradas.paginator = this.paginator;
-}
+  //PAGINACIÓN PARA LA TABLA DE INVENTARIO
+  @ViewChild(MatPaginator, { static: false }) set matPaginator(mp: MatPaginator) {
+    this.paginator = mp;
+    this.dataSource_Entradas.paginator = this.paginator;
+  }
 constructor(
   private inventarioService:InventarioService,
   private entradaService:EntradaService,
@@ -50,10 +51,10 @@ constructor(
     this.getInventario();
 
     this.entradaForm = this.formBuilder.group({
-      descripcion : [null,],
-      idProducto  : [null, Validators.required],
+      descripcion  : [null,],
+      idProducto   : [null, Validators.required],
       fechaEntrada : [null, Validators.required],
-      cantidad    : [null, Validators.required]
+      cantidad     : [null, Validators.required]
     });
   }
 
@@ -89,7 +90,7 @@ constructor(
         if (response.mensaje=="OK"){
           this.getEntradas();
           this.getInventario();
-          this.entradaForm.reset();
+          this.clearForm();
           $('#modalEntrada').modal('hide');
           this.toastr.success(response.detalles,'Correcto')
         }else{
@@ -105,7 +106,12 @@ constructor(
   }
 
   clearForm(){
-    this.entradaForm.reset();
+    this.entradaForm = this.formBuilder.group({
+      descripcion  : [null,],
+      idProducto   : [null, Validators.required],
+      fechaEntrada : [null, Validators.required],
+      cantidad     : [null, Validators.required]
+    });
   }
 
 }
