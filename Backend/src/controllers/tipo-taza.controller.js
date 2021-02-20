@@ -1,5 +1,5 @@
 const pool = require("../database");
-const inventarioModel = require('../models/inventario');
+const {tipoTazaModel} = require('../models/tipo-taza');
 
 
 //OBTENER EL LITADO DE TODOS LOS TIPO DE TAZAS POR SU CALIDAD
@@ -62,6 +62,16 @@ exports.addTipoTaza =async (req,res)=>{
         descripcion: req.body.tipoTaza.descripcion,
     };
 
+    //VALIDAMOS EL REQUEST CON JOI
+    try{
+        await tipoTazaModel.validateAsync(requestBody);
+    }catch(error){
+        return res.status(400).json({
+            mensaje:"Petición invalida",
+            detalles:error['details']
+        });
+    }
+
     pool.query(query,[requestBody] ,function (err, result) {
         if (result) {
             res.status(200).json({
@@ -78,14 +88,28 @@ exports.addTipoTaza =async (req,res)=>{
 }
 
 //MODIFICAR UN TIPO DE TAZA
-exports.editTipoTaza = function (req, res) {
+exports.editTipoTaza = async (req, res)=> {
+    //OBTENEMOS EL ID QUE DESEAMOS MODIFICAR
     const {idTipoTaza} = req.params;
+
     let requestBody = {
         descripcion: req.body.tipoTaza.descripcion,
     };
 
+    //VALIDAMOS EL REQUEST CON JOI
+    try{
+        await tipoTazaModel.validateAsync(requestBody);
+    }catch(error){
+        return res.status(400).json({
+            mensaje:"Petición invalida",
+            detalles:error['details']
+        });
+    }
+
+    //CONSULTA PARA MODIFICAR UN TIPO DE TAZA
     let query = 'UPDATE tipo_taza SET ? where idTipoTaza=?';
 
+    //SE INICIA LA CONSULTA
     pool.query(query,[requestBody,idTipoTaza] ,function (err, result) {
         if (result) {
             res.status(200).json({

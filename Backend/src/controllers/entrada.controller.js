@@ -1,5 +1,5 @@
 const pool = require("../database");
-const inventarioModel = require('../models/inventario');
+const {entradaModel} = require('../models/entrada');
 
 
 //OBTENER EL LITADO DE TODAS LAS ENTRADAS DE ALMACÉN
@@ -64,6 +64,17 @@ exports.addEntrada =async (req,res)=>{
         fechaEntrada : req.body.entrada.fechaEntrada,
         cantidad     : req.body.entrada.cantidad,
     };
+
+    //VALIDAMOS EL REQUEST CON JOI
+    try{
+        await entradaModel.validateAsync(requestBody);
+    }catch(error){
+        return res.status(400).json({
+            mensaje:"Petición invalida",
+            detalles:error['details']
+        });
+    }
+
 
     let cantidad= req.body.entrada.cantidad;//OBTENER LA CANTIDAD DE TAZAS QUE ENTRAN A ALMACÉN PARA SUMARLAS AL INVENTARIO
     let idProducto= req.body.entrada.idProducto;//OBTENER EL ID DEL PRODCUTO QUE ENTRA AL ALMACÉN PARA SUMARLE LA CANTIDAD EN LA TABLA INVENTARIO.

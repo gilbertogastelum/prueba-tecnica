@@ -1,5 +1,6 @@
 const pool = require("../database");
-const inventarioModel = require('../models/inventario');
+const {inventarioModel} = require('../models/inventario');
+
 
 
 //OBTENER EL LITADO DE TODOS LOS PRODUCTOS DEL INVENTARIO
@@ -90,15 +91,21 @@ exports.addProducto =async (req,res)=>{
         capacidad  : req.body.producto.capacidad,
         modelo     : req.body.producto.modelo,
         material   : req.body.producto.material,
-        stock      : req.body.producto.stock,
+        stock      : 0,
     };
 
-    console.log(req.body.producto);
+    //VALIDAMOS EL REQUEST CON JOI
+    try{
+        await inventarioModel.validateAsync(requestBody);
+    }catch(error){
+        return res.status(400).json({
+            mensaje:"Petición invalida",
+            detalles:error['details']
+        });
+    }
 
     pool.query(query,[requestBody] ,function (err, result) {
         if (result) {
-            console.log(result);
-            console.log(result.lenght);
             res.status(200).json({
                 mensaje: "OK",
                 detalles: "Producto agregado correctamente al inventario.",
@@ -113,7 +120,7 @@ exports.addProducto =async (req,res)=>{
 }
 
 //MODIFICAR UN PRODUCTO DEL INVENTARIO
-exports.editProducto = function (req, res) {
+exports.editProducto =async (req,res)=>{
     const {idProducto} = req.params;
     let requestBody = {
         descripcion: req.body.producto.descripcion,
@@ -126,6 +133,16 @@ exports.editProducto = function (req, res) {
         material   : req.body.producto.material,
         stock      : req.body.producto.stock,
     };
+
+    //VALIDAMOS EL REQUEST CON JOI
+    try{
+        await inventarioModel.validateAsync(requestBody);
+    }catch(error){
+        return res.status(400).json({
+            mensaje:"Petición invalida",
+            detalles:error['details']
+        });
+    }
 
     let query = 'UPDATE inventario SET ? where idProducto=?';
 

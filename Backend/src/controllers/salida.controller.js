@@ -1,11 +1,11 @@
 const pool = require("../database");
-const inventarioModel = require('../models/inventario');
+const {salidaModel} = require('../models/salida');
 
 
 //TIPO DE TAZA 1 : CALIDAD ALTA
 //TIPO DE TAZA 2 : CALIDAD BAJA
 
-//OBTENER EL LITADO DE TODAS LAS SALIDAS DE INVENTARIO
+//OBTENER EL LISTADO DE TODAS LAS SALIDAS DE INVENTARIO
 exports.getSalidas = function (req, res) {
     let query = 'SELECT *FROM salida';
     pool.query(query, function (err, result) {
@@ -57,7 +57,7 @@ exports.getSalidaById = function (req, res) {
 };
 
 //PROCESO DE SALIDA DE ALMACÉN Y RESTAR  STOCK DEL INVENTARIO.
-exports.addSalida = function (req,res){
+exports.addSalida = async (req,res)=>{
     let query = 'INSERT INTO salida set ?';
     let requestBody = {
         descripcion  : req.body.salida.descripcion,
@@ -65,6 +65,16 @@ exports.addSalida = function (req,res){
         fechaSalida  : req.body.salida.fechaSalida,
         cantidad     : req.body.salida.cantidad,
     };
+
+      //VALIDAMOS EL REQUEST CON JOI
+    try{
+        await salidaModel.validateAsync(requestBody);
+    }catch(error){
+        return res.status(400).json({
+            mensaje:"Petición invalida",
+            detalles:error['details']
+        });
+    }
 
     let cantidad= req.body.salida.cantidad;//OBTENER LA CANTIDAD DE TAZAS QUE SALEN DE ALMACÉN PARA RESTARLAS DEL INVENTARIO
     let idTipoTaza  = req.body.salida.idTipoTaza;/*OBTENER EL TIPO DE TAZA PARA DETERMINAR CUANTAS SE REGALARÁN EN CASO DE QUE CUMPLA
@@ -138,6 +148,11 @@ exports.addSalida = function (req,res){
                                         detalles: "Salida de almacén registrada correctamente. Se aplicó la promoción con "+tazasRegaladas+" tazas de baja calidad regaladas.",
                                     });
                                 }
+                            });
+                        }else{
+                            res.status(200).json({
+                                mensaje: "OK",
+                                detalles: "Salida de almacén registrada correctamente. No se aplicó ninguna promoción debido a falta de stock en tazas de baja calidad",
                             });
                         }
                     }
