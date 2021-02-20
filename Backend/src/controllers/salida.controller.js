@@ -179,7 +179,7 @@ exports.addSalida = async (req, res) => {
 
                                     let queryAddSalidaPromocion = 'INSERT INTO salida set ?';
                                     let dataQuery = {
-                                        descripcion: "Salida por promocióm",
+                                        descripcion: "Salida por promoción",
                                         idProducto: idProductoPromocion,
                                         fechaSalida: fechaSalidaPromocion,
                                         cantidad: tazasRegaladas,
