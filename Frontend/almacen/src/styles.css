@@ -2,3 +2,26 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.cdk-global-overlay-wrapper, .cdk-overlay-container { z-index: 9999!important; }
+
+.mat-raised-button.mat-success,
+.mat-flat-button.mat-success,
+.mat-fab.mat-success,
+.mat-mini-fab.mat-success {
+  color: #f0fff3;
+  background-color: #155724;
+  margin-left: 5px;
+}
+
+
+.mat-raised-button.mat-danger,
+.mat-flat-button.mat-danger,
+.mat-fab.mat-danger,
+.mat-mini-fab.mat-danger {
+  color: #ffffff;
+  background-color: #eb0808;
+  margin-left: 5px;
+}
+
+@import '~ngx-toastr/toastr.css';

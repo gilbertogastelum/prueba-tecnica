@@ -1,5 +1,148 @@
-<app-main-nav>
+<app-main-nav></app-main-nav>
+<div class="container">
 
-</app-main-nav>
+  <div class="row" style="margin-top: 5%;">
+    <div class="col">
+      <mat-form-field style="width: 100%;">
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+      </mat-form-field>
+    </div>
+    <div class="col " style="text-align: right;">
+        <button mat-raised-button color="primary" data-toggle="modal" data-target="#modalProducto" >Añadir Producto</button>
+    </div>
 
-<p>salidas works!</p>
+  </div>
+  <div class="mat-elevation-z8">
+  <mat-table #table  matSort [dataSource]="dataSource_Salidas">
+
+    <!-- COLUMNA DESCRIPCIÓN-->
+    <ng-container matColumnDef="idSalida">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Id. </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.idSalida}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA DESCRIPCIÓN-->
+    <ng-container matColumnDef="descripcion">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Descripción </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.descripcion}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA IDENTIFICADOR DEL PRODUCTO -->
+    <ng-container matColumnDef="idProducto">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Id. Producto</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.idProducto}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA FECHA DE SALIDA-->
+    <ng-container matColumnDef="fechaSalida">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Fecha de salida </mat-header-cell>
+      <<mat-cell *matCellDef="let element">
+
+        {{ element.fechaSalida | date }}
+      </mat-cell>>
+    </ng-container>
+
+    <!-- COLUMNA CANTIDAD -->
+    <ng-container matColumnDef="cantidad">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Cantidad </mat-header-cell>
+      <<mat-cell *matCellDef="let element"> {{element.cantidad}} </mat-cell>>
+    </ng-container>
+
+    <!-- <ng-container matColumnDef="edit">
+      <mat-header-cell *matHeaderCellDef> Editar </mat-header-cell>
+      <mat-cell *matCellDef="let element"> <button (click)="openEditar(element)"   class="tableButton"data-toggle="modal" data-target="#modalEditProducto">
+        <span class="material-icons">
+          mode
+        </span></button>
+       </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="delete">
+      <mat-header-cell *matHeaderCellDef> Eliminar </mat-header-cell>
+      <mat-cell *matCellDef="let element"> <button class="tableButton" data-toggle="modal" data-target="#deleteModal">
+        <span class="material-icons">
+          delete
+        </span></button>
+      </mat-cell>
+    </ng-container> -->
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  </div>
+</div>
+
+
+
+
+<!-- MODAL PARA EL REGISTRO DE NUEVOS PRODUCTOS-->
+<div class="modal fade" id="modalProducto" tabindex="-1" role="dialog" aria-labelledby="modalProducto" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form [formGroup]="salidaForm" (submit)="addSalida()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">Registro salida de almacén</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body ">
+        <!-- FILA PARA DESCRIPCIÓN -->
+        <div class="row">
+          <div class="col">
+            <mat-form-field  style="width: 100%;" appearance="outline">
+              <mat-label>Descripción</mat-label>
+              <input matInput placeholder="Descripción" formControlName="descripcion">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- FILA PARA ID DE PRODUCTO -->
+        <div class="row">
+          <div class="col">
+            <mat-form-field style="width: 100%;" appearance="fill">
+              <mat-label>Tipo de taza</mat-label>
+              <mat-select formControlName="idProducto" [(ngModel)]="productoSeleccionado" name="food">
+                <mat-option *ngFor="let prodcuto of inventario" [value]="prodcuto.idProducto">
+                  Id:{{prodcuto.idProducto}}  |---|  Modelo:{{prodcuto.modelo}}  |---|  Stock:{{prodcuto.stock}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- FILA PARA FECHA DE SALIDA-->
+        <div class="row">
+          <div class="col">
+            <mat-form-field style="width: 100%;" appearance="fill">
+              <mat-label>Fecha de salida</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="fechaSalida">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- FILA PARA CANTIDAD -->
+        <div class="row">
+          <div class="col">
+            <mat-form-field  style="width: 100%;"  appearance="outline">
+              <mat-label>Cantidad</mat-label>
+              <input matInput placeholder="Cantidad" [(ngModel)]="cantidadSalida" formControlName="cantidad"  min=1 type="number">
+            </mat-form-field>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button mat-raised-button color="danger" data-dismiss="modal">Cancelar</button>
+        <button mat-raised-button color="success" type="submit" [disabled]="salidaForm.invalid">Añadir Salida de almacén</button>
+      </div>
+    </div>
+  </form>
+  </div>
+</div>

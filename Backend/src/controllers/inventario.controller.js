@@ -4,7 +4,30 @@ const inventarioModel = require('../models/inventario');
 
 //OBTENER EL LITADO DE TODOS LOS PRODUCTOS DEL INVENTARIO
 exports.getProductos = function (req, res) {
-    let query = 'SELECT *FROM inventario';
+    let query = 'SELECT  inventario.idProducto, inventario.descripcion,  inventario.color, inventario.altura, inventario.ancho, inventario.capacidad, inventario.modelo,inventario.material ,inventario.stock, tipo_taza.descripcion as tipoTaza from inventario INNER JOIN tipo_taza ON inventario.tipoTaza= tipo_taza.idTipoTaza';
+    pool.query(query, function (err, result) {
+        if (result.length > 0) {
+            res.status(200).json({
+                mensaje: "OK",
+                detalles: result,
+            });
+        } 
+        else if((result.length == 0)){
+            res.status(404).json({
+                mensaje: "No existen registros en la base de datos.",
+            });
+        }
+        else if (err) {
+            res.status(400).json({
+                mensaje: "Ha ocurrido un error",
+                detalles: err
+            });
+        }
+    });
+};
+
+exports.geInventarioCompleto = function (req, res) {
+    let query = 'SELECT  *FROM inventario';
     pool.query(query, function (err, result) {
         if (result.length > 0) {
             res.status(200).json({
@@ -59,23 +82,26 @@ exports.getProductoById = function (req, res) {
 exports.addProducto =async (req,res)=>{
     let query = 'INSERT INTO inventario set ?';
     let requestBody = {
-        descripcion: req.body.descripcion,
-        tipoTaza   : req.body.tipoTaza,
-        color      : req.body.color,
-        altura     : req.body.altura,
-        ancho      : req.body.ancho,
-        capacidad  : req.body.capacidad,
-        modelo     : req.body.modelo,
-        material   : req.body.material,
-        stock      : req.body.stock,
+        descripcion: req.body.producto.descripcion,
+        tipoTaza   : req.body.producto.tipoTaza,
+        color      : req.body.producto.color,
+        altura     : req.body.producto.altura,
+        ancho      : req.body.producto.ancho,
+        capacidad  : req.body.producto.capacidad,
+        modelo     : req.body.producto.modelo,
+        material   : req.body.producto.material,
+        stock      : req.body.producto.stock,
     };
+
+    console.log(req.body.producto);
 
     pool.query(query,[requestBody] ,function (err, result) {
         if (result) {
             console.log(result);
             console.log(result.lenght);
             res.status(200).json({
-                mensaje: "Producto agregado correctamente al inventario.",
+                mensaje: "OK",
+                detalles: "Producto agregado correctamente al inventario.",
             });
         } else {
             res.status(400).json({
@@ -90,15 +116,15 @@ exports.addProducto =async (req,res)=>{
 exports.editProducto = function (req, res) {
     const {idProducto} = req.params;
     let requestBody = {
-        descripcion: req.body.descripcion,
-        tipoTaza   : req.body.tipoTaza,
-        color      : req.body.color,
-        altura     : req.body.altura,
-        ancho      : req.body.ancho,
-        capacidad  : req.body.capacidad,
-        modelo     : req.body.modelo,
-        material   : req.body.material,
-        stock      : req.body.stock,
+        descripcion: req.body.producto.descripcion,
+        tipoTaza   : req.body.producto.tipoTaza,
+        color      : req.body.producto.color,
+        altura     : req.body.producto.altura,
+        ancho      : req.body.producto.ancho,
+        capacidad  : req.body.producto.capacidad,
+        modelo     : req.body.producto.modelo,
+        material   : req.body.producto.material,
+        stock      : req.body.producto.stock,
     };
 
     let query = 'UPDATE inventario SET ? where idProducto=?';
@@ -108,7 +134,8 @@ exports.editProducto = function (req, res) {
             console.log(result);
             console.log(result.lenght);
             res.status(200).json({
-                mensaje: "Se modificó correctamente el producto con id: "+idProducto,
+                mensaje: "OK",
+                detalles: "Se modificó correctamente el producto con id: "+idProducto,
             });
         } else {
             res.status(400).json({
@@ -130,7 +157,8 @@ exports.deleteProducto = function (req, res) {
             console.log(result);
             console.log(result.lenght);
             res.status(200).json({
-                mensaje: "Se eliminó el producto con id: "+idProducto,
+                mensaje: "OK",
+                detalles: "Se eliminó el producto con id: "+idProducto,
             });
         } else {
             res.status(400).json({

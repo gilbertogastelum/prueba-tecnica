@@ -2,6 +2,7 @@ const router = require('express').Router();
 const inventarioController = require('../controllers/inventario.controller');
 
 router.get('/getProductos',inventarioController.getProductos);
+router.get('/getInventario',inventarioController.geInventarioCompleto);
 router.get('/getProductoById/:idProducto',inventarioController.getProductoById);
 router.post('/addProducto',inventarioController.addProducto);
 router.put('/editProducto/:idProducto',inventarioController.editProducto);

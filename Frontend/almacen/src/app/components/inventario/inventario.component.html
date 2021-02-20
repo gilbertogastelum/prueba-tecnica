@@ -1,4 +1,323 @@
 <app-main-nav></app-main-nav>
 <div class="container">
 
+  <div class="row" style="margin-top: 5%;">
+    <div class="col">
+      <mat-form-field style="width: 100%;">
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+      </mat-form-field>
+    </div>
+    <div class="col " style="text-align: right;">
+        <button mat-raised-button color="primary" data-toggle="modal" data-target="#modalProducto" >Añadir Producto</button>
+    </div>
+
+  </div>
+  <div class="mat-elevation-z8">
+  <mat-table #table  matSort [dataSource]="dataSource_Inventario">
+
+    <!-- COLUMNA DESCRIPCIÓN-->
+    <ng-container matColumnDef="descripcion">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Descripción </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.descripcion}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA TIPO DE TAZA -->
+    <ng-container matColumnDef="tipoTaza">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Tipo de taza </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.tipoTaza}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA COLOR-->
+    <ng-container matColumnDef="color">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Color </mat-header-cell>
+      <<mat-cell *matCellDef="let element"><input type="color" value="{{element.color}}" style="border: none; border-color: transparent;" disabled> </mat-cell>>
+    </ng-container>
+
+    <!-- COLUMNA ALTURA -->
+    <ng-container matColumnDef="altura">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Altura </mat-header-cell>
+      <<mat-cell *matCellDef="let element"> {{element.altura}} </mat-cell>>
+    </ng-container>
+
+    <!-- COLUMNA ANCHO -->
+    <ng-container matColumnDef="ancho">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Ancho </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.ancho}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA CAPACIDAD -->
+    <ng-container matColumnDef="capacidad">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Capacidad </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.capacidad}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA MODELO -->
+    <ng-container matColumnDef="modelo">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Modelo </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.modelo}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA MATERIAL -->
+    <ng-container matColumnDef="material">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Material </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.material}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA STOCK -->
+    <ng-container matColumnDef="stock">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Stock </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.stock}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="edit">
+      <mat-header-cell *matHeaderCellDef> Editar </mat-header-cell>
+      <mat-cell *matCellDef="let element"> <button (click)="openEditar(element)"   class="tableButton"data-toggle="modal" data-target="#modalEditProducto">
+        <span class="material-icons">
+          mode
+        </span></button>
+       </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="delete">
+      <mat-header-cell *matHeaderCellDef> Eliminar </mat-header-cell>
+      <mat-cell *matCellDef="let element"> <button (click)="openEliminar(element)" class="tableButton" data-toggle="modal" data-target="#deleteModal">
+        <span class="material-icons">
+          delete
+        </span></button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  </div>
+</div>
+
+
+
+
+
+<!-- MODAL PARA EL REGISTRO DE NUEVOS PRODUCTOS-->
+<div class="modal fade" id="modalProducto" tabindex="-1" role="dialog" aria-labelledby="modalProducto" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <form [formGroup]="inventarioForm" (submit)="addProducto()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">Registro de inventario</h2>
+        <button type="button" (click)="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body ">
+        <!-- FILA PARA DESCRIPCIÓN -->
+        <div class="row">
+          <mat-form-field  style="width: 100%;" appearance="outline">
+            <mat-label>Descripción</mat-label>
+            <input matInput placeholder="Descripción" formControlName="descripcion">
+          </mat-form-field>
+        </div>
+
+        <!-- FILA PARA TIPO DE TAZA Y COLOR -->
+        <div class="row">
+          <div class="col">
+            <mat-form-field style="width: 100%;" appearance="fill">
+              <mat-label>Tipo de taza</mat-label>
+              <mat-select formControlName="tipoTaza" name="food">
+                <mat-option *ngFor="let tipo of tipoTaza" [value]="tipo.idTipoTaza">
+                  {{tipo.descripcion}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+          <div class="col">
+            <mat-label>Color</mat-label>
+              <input matInput placeholder="Color"  formControlName="color" type="color">
+          </div>
+        </div>
+
+        <!-- FILA PARA ALTURA Y ANCHO -->
+        <div class="row">
+          <div class="col">
+            <mat-form-field  style="width: 100%;" appearance="outline">
+              <mat-label>Altura</mat-label>
+              <input matInput placeholder="Altura" formControlName="altura"  type="number">
+            </mat-form-field>
+          </div>
+          <div class="col">
+            <mat-form-field  style="width: 100%;" appearance="outline">
+              <mat-label>Ancho</mat-label>
+              <input matInput placeholder="Ancho" formControlName="ancho"  type="number">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- FILA PARA CAPACIDAD Y MODELO -->
+        <div class="row">
+          <div class="col">
+            <mat-form-field  style="width: 100%;" appearance="outline">
+              <mat-label>Capacidad</mat-label>
+              <input matInput placeholder="Capacidad" formControlName="capacidad"  type="number">
+            </mat-form-field>
+          </div>
+          <div class="col">
+            <mat-form-field  style="width: 100%;" appearance="outline">
+              <mat-label>Modelo</mat-label>
+              <input matInput placeholder="Modelo" formControlName="modelo">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- FILA PARA MATERIAL Y STOCK -->
+        <div class="row">
+          <div class="col">
+            <mat-form-field  style="width: 100%;" appearance="outline">
+              <mat-label>Material</mat-label>
+              <input matInput placeholder="Material" formControlName="material">
+            </mat-form-field>
+          </div>
+          <div class="col">
+            <mat-form-field  style="width: 100%;" appearance="outline">
+              <mat-label>Stock</mat-label>
+              <input matInput placeholder="Stock" formControlName="stock"  type="number">
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button mat-raised-button color="danger" (click)="clearForm()" data-dismiss="modal">Cancelar</button>
+        <button mat-raised-button color="success" type="submit" [disabled]="inventarioForm.invalid">Añadir Producto</button>
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+
+
+<!-- MODAL PARA EDITAR PRODUCTOS-->
+<div class="modal fade" id="modalEditProducto" tabindex="-1" role="dialog" aria-labelledby="modalEditProducto" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <form [formGroup]="inventarioForm" (submit)="editProdcuto()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditProducto">Modificar Inventario</h5>
+          <button type="button" (click)="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body ">
+          <!-- FILA PARA DESCRIPCIÓN -->
+          <div class="row" >
+            <div class="col">
+              <mat-form-field  style="width: 100%;" >
+                <mat-label>Descripción</mat-label>
+                <input matInput placeholder="Descripción" formControlName="descripcion">
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- FILA PARA TIPO DE TAZA Y COLOR -->
+          <div class="row">
+            <div class="col">
+              <mat-form-field style="width: 100%;" appearance="fill">
+                <mat-label>Tipo de taza</mat-label>
+                <mat-select formControlName="tipoTaza" name="food">
+                  <mat-option *ngFor="let tipo of tipoTaza" [value]="tipo.idTipoTaza">
+                    {{tipo.descripcion}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+            </div>
+            <div class="col">
+              <mat-label>Color</mat-label>
+                <input matInput placeholder="Color"  formControlName="color" type="color">
+            </div>
+          </div>
+
+          <!-- FILA PARA ALTURA Y ANCHO -->
+          <div class="row">
+            <div class="col">
+              <mat-form-field  style="width: 100%;" >
+                <mat-label>Altura</mat-label>
+                <input matInput placeholder="Altura" formControlName="altura"  type="number">
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field  style="width: 100%;" >
+                <mat-label>Ancho</mat-label>
+                <input matInput placeholder="Ancho" formControlName="ancho"  type="number">
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- FILA PARA CAPACIDAD Y MODELO -->
+          <div class="row">
+            <div class="col">
+              <mat-form-field  style="width: 100%;" >
+                <mat-label>Capacidad</mat-label>
+                <input matInput placeholder="Capacidad" formControlName="capacidad"  type="number">
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field  style="width: 100%;" >
+                <mat-label>Modelo</mat-label>
+                <input matInput placeholder="Modelo" formControlName="modelo">
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- FILA PARA MATERIAL Y STOCK -->
+          <div class="row">
+            <div class="col">
+              <mat-form-field  style="width: 100%;">
+                <mat-label>Material</mat-label>
+                <input matInput placeholder="Material" formControlName="material">
+              </mat-form-field>
+            </div>
+            <div class="col">
+              <mat-form-field  style="width: 100%;">
+                <mat-label>Stock</mat-label>
+                <input matInput  placeholder="Stock" formControlName="stock"  type="number" >
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button mat-raised-button color="danger" (click)="clearForm()" data-dismiss="modal">Cancelar</button>
+          <button mat-raised-button color="success" type="submit">Guardar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- MODAL PARA CONFIRMACIÓN DE ELIMINAR PRODUCTO -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <form [formGroup]="inventarioForm" (submit)="deleteProducto()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="deleteModal">Eliminar producto de inventario</h2>
+          <button type="button" (click)="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ¿Seguro que deseas eliminar el prodcuto del inventario?
+        </div>
+        <div class="modal-footer">
+          <button mat-raised-button color="primary" (click)="clearForm()" data-dismiss="modal" >Cancelar</button>
+          <button mat-raised-button color="danger" type="submit">Eliminar</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
