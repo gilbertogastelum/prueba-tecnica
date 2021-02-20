@@ -9,15 +9,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MainNavComponent } from './components/main-nav/main-nav.component';
 import { EntradasComponent } from './components/entradas/entradas.component';
 import { SalidasComponent } from './components/salidas/salidas.component';
+import { TipoTazaComponent } from './components/tipo-taza/tipo-taza.component';
 import { HomeComponent } from './components/home/home.component';
 import { InventarioComponent } from './components/inventario/inventario.component';
 import { HttpClientModule } from '@angular/common/http';
 
 
 //COMPONENTES DE ANGULAR MATERIAL
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import {MatMenuModule} from '@angular/material/menu';
 import {MatListModule} from '@angular/material/list';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
@@ -32,9 +30,9 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
-//
+//toastr
 import { ToastrModule } from 'ngx-toastr';
-import { TipoTazaComponent } from './components/tipo-taza/tipo-taza.component';
+
 
 
 
@@ -53,9 +51,6 @@ import { TipoTazaComponent } from './components/tipo-taza/tipo-taza.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     LayoutModule,
-    MatToolbarModule,
-    MatSidenavModule,
-    MatMenuModule,
     MatListModule,
     MatButtonModule,
     MatIconModule,
