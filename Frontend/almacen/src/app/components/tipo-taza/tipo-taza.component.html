@@ -1,0 +1,148 @@
+<app-main-nav></app-main-nav>
+<div class="container">
+
+  <div class="row" style="margin-top: 5%;">
+    <div class="col">
+      <mat-form-field style="width: 100%;">
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+      </mat-form-field>
+    </div>
+    <div class="col " style="text-align: right;">
+        <button mat-raised-button color="primary" data-toggle="modal" data-target="#modalTipo" >Registrar tipo de taza</button>
+    </div>
+
+  </div>
+  <div class="mat-elevation-z8">
+  <mat-table #table  matSort [dataSource]="dataSource_TipoTaza">
+
+    <!-- COLUMNA IDENTIFICADOR-->
+    <ng-container matColumnDef="idTipoTaza">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Id. </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.idTipoTaza}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA DESCRIPCIÓN-->
+    <ng-container matColumnDef="descripcion">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Descripción </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.descripcion}} </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA PARA EDITAR -->
+    <ng-container matColumnDef="edit">
+      <mat-header-cell *matHeaderCellDef> Editar </mat-header-cell>
+      <mat-cell *matCellDef="let element"> <button (click)="openEditar(element)"   class="tableButton"data-toggle="modal" data-target="#modalEditTipoTaza">
+        <span class="material-icons">
+          mode
+        </span></button>
+       </mat-cell>
+    </ng-container>
+
+    <!-- COLUMNA PARA ELIMINAR -->
+    <ng-container matColumnDef="delete">
+      <mat-header-cell *matHeaderCellDef> Eliminar </mat-header-cell>
+      <mat-cell *matCellDef="let element"> <button (click)="openEliminar(element)" class="tableButton" data-toggle="modal" data-target="#deleteModal">
+        <span class="material-icons">
+          delete
+        </span></button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  </div>
+</div>
+
+
+
+
+<!-- MODAL PARA EL REGISTRO DE NUEVOS TIPOS DE TAZA-->
+<div class="modal fade" id="modalTipo" tabindex="-1" role="dialog" aria-labelledby="modalTipo" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <form [formGroup]="tipoTazaForm" (submit)="addTipoTaza()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">Registro tipo de taza</h2>
+        <button type="button" (click)="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body ">
+        <!-- FILA PARA DESCRIPCIÓN -->
+        <div class="row">
+          <div class="col">
+            <mat-form-field  style="width: 100%;" appearance="outline">
+              <mat-label>Descripción</mat-label>
+              <input matInput placeholder="Descripción" formControlName="descripcion">
+            </mat-form-field>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button mat-raised-button color="danger"(click)="clearForm()" data-dismiss="modal">Cancelar</button>
+        <button mat-raised-button color="success" type="submit" [disabled]="tipoTazaForm.invalid">Añadir tipo de taza</button>
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+
+
+<!-- MODAL PARA EDITAR TIPOS DE TAZA-->
+<div class="modal fade" id="modalEditTipoTaza" tabindex="-1" role="dialog" aria-labelledby="modalEditTipoTaza" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <form [formGroup]="tipoTazaForm" (submit)="editTipoTaza()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditTipoTaza">Modificar tipo de taza</h5>
+          <button type="button" (click)="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body ">
+          <!-- FILA PARA DESCRIPCIÓN -->
+          <div class="row" >
+            <div class="col">
+              <mat-form-field  style="width: 100%;" >
+                <mat-label>Descripción</mat-label>
+                <input matInput placeholder="Descripción" formControlName="descripcion">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button mat-raised-button color="danger" (click)="clearForm()" data-dismiss="modal">Cancelar</button>
+          <button mat-raised-button color="success" type="submit">Guardar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- MODAL PARA CONFIRMACIÓN DE ELIMINAR TIPO DE TAZA -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <form [formGroup]="tipoTazaForm" (submit)="deleteTipoTaza()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="deleteModal">Eliminar Tipo de taza</h2>
+          <button type="button" (click)="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ¿Seguro que deseas eliminar el tipo de taza?
+        </div>
+        <div class="modal-footer">
+          <button mat-raised-button color="primary" (click)="clearForm()" data-dismiss="modal" >Cancelar</button>
+          <button mat-raised-button color="danger" type="submit">Eliminar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -34,6 +34,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 //
 import { ToastrModule } from 'ngx-toastr';
+import { TipoTazaComponent } from './components/tipo-taza/tipo-taza.component';
 
 
 
@@ -45,6 +46,7 @@ import { ToastrModule } from 'ngx-toastr';
     SalidasComponent,
     HomeComponent,
     InventarioComponent,
+    TipoTazaComponent,
   ],
   imports: [
     BrowserModule,

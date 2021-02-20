@@ -20,4 +20,23 @@ export class TipoTazaService {
   getTiposTaza(): Observable<any> {
     return this.http.get(`${this.endpointUrl}/getTipos`,);
   }
+
+  addTipoTaza(tipoTaza:TipoTaza):Observable <any>{
+    return this.http
+      .post(`${this.endpointUrl}/addTipoTaza`, {
+        tipoTaza: tipoTaza,
+      });
+  }
+
+  editTipoTaza(tipoTaza:TipoTaza):Observable <any>{
+    return this.http
+      .put(`${this.endpointUrl}/editTipoTaza/${tipoTaza.idTipoTaza}`, {
+        tipoTaza: tipoTaza,
+      });
+  }
+
+  deleteTipoTaza(tipoTaza:TipoTaza):Observable <any>{
+    return this.http
+      .delete(`${this.endpointUrl}/deleteTipoTaza/${tipoTaza.idTipoTaza}`);
+  }
 }

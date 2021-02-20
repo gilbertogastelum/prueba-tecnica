@@ -16,12 +16,12 @@ declare let $: any;
 })
 
 export class InventarioComponent implements OnInit {
-  inventarioForm!: FormGroup;
+  inventarioForm: FormGroup;
   selectedRow:any;//PARA OBTENER DATOS DE LA FILA SELECCIONADA A MODIFICAR O ELIMINAR
   selectedTipo:any;//GUARDAR EL TIPO DE TAZA PARA MOSTRARLA EN EL FORM
   stock:number;//PARA MOSTRAR EL STOCK DEL PRODUCTO, NO MODIFICABLE DESDE DE ESTE MÓDULO
-  private paginator!: MatPaginator;
-  private sort!: MatSort;
+  private paginator: MatPaginator;
+  private sort: MatSort;
   tipoTaza: TipoTaza[]=[];
   displayedColumns: string[] = ['descripcion', 'tipoTaza', 'color', 'altura', 'ancho', 'capacidad', 'modelo', 'material', 'stock', 'edit','delete'];
   dataSource_Inventario = new MatTableDataSource<any>();
@@ -49,15 +49,15 @@ export class InventarioComponent implements OnInit {
     this.getInventario();
     this.getTiposTaza();
     this.inventarioForm = this.formBuilder.group({
-      descripcion: [null,],
-      tipoTaza: [null, Validators.required],
-      color: ['#000000', Validators.required],
-      altura: [null, Validators.required],
-      ancho: [null, Validators.required],
-      capacidad: [null, Validators.required],
-      modelo: [null, Validators.required],
-      material: [null, Validators.required],
-      stock: [0, Validators.required]
+      descripcion : [null,],
+      tipoTaza    : [null, Validators.required],
+      color       : ['#000000', Validators.required],
+      altura      : [null, Validators.required],
+      ancho       : [null, Validators.required],
+      capacidad   : [null, Validators.required],
+      modelo      : [null, Validators.required],
+      material    : [null, Validators.required],
+      stock       : [0, Validators.required]
     });
     this.inventarioForm.controls['stock'].disable()
   }
@@ -78,7 +78,7 @@ export class InventarioComponent implements OnInit {
     this.tiposTazaService.getTiposTaza().subscribe((
       response=>{
         if(response==null){
-          console.log("No hay registros")
+          this.toastr.error("No existen tipos de tazas","Error")
         }else{
           this.tipoTaza= response.detalles as TipoTaza[];
         }
@@ -93,7 +93,7 @@ export class InventarioComponent implements OnInit {
       response=>{
         if (response.mensaje=="OK"){
           this.getInventario();
-          this.inventarioForm.reset();
+          this.clearForm();
           $('#modalProducto').modal('hide');
           this.toastr.success(response.detalles,'Correcto')
         }else{
@@ -118,16 +118,16 @@ export class InventarioComponent implements OnInit {
 
     this.inventarioForm.controls['stock'].disable()
     this.inventarioForm = this.formBuilder.group({
-      idProducto: [data.idProducto, [Validators.required,]],
-      descripcion: [data.descripcion, [Validators.required,]],
-      tipoTaza: [this.selectedTipo, Validators.required],
-      color: [data.color, Validators.required],
-      altura: [data.altura, Validators.required],
-      ancho: [data.ancho, Validators.required],
-      capacidad: [data.capacidad, Validators.required],
-      modelo: [data.modelo, Validators.required],
-      material: [data.material, Validators.required],
-      stock: [data.stock, Validators.required,]
+      idProducto  : [data.idProducto, [Validators.required,]],
+      descripcion : [data.descripcion, [Validators.required,]],
+      tipoTaza    : [this.selectedTipo, Validators.required],
+      color       : [data.color, Validators.required],
+      altura      : [data.altura, Validators.required],
+      ancho       : [data.ancho, Validators.required],
+      capacidad   : [data.capacidad, Validators.required],
+      modelo      : [data.modelo, Validators.required],
+      material    : [data.material, Validators.required],
+      stock       : [data.stock, Validators.required,]
     });
   }
 
@@ -138,7 +138,7 @@ export class InventarioComponent implements OnInit {
       response=>{
         if (response.mensaje=="OK"){
           this.getInventario();
-          this.inventarioForm.reset();
+          this.clearForm();
           $('#modalEditProducto').modal('hide');
           this.toastr.success(response.detalles,'Correcto')
         }else{
@@ -156,7 +156,8 @@ export class InventarioComponent implements OnInit {
 
   async deleteProducto(){
     let formObj = this.inventarioForm.getRawValue();
-    await this.inventarioService.deleteProducto(formObj).subscribe((
+
+    this.inventarioService.deleteProducto(formObj).subscribe((
       response=>{
         if (response.mensaje=="OK"){
           this.getInventario();
@@ -170,6 +171,17 @@ export class InventarioComponent implements OnInit {
   }
 
   clearForm(){
-    this.inventarioForm.reset();
+    this.inventarioForm = this.formBuilder.group({
+      descripcion : [null,],
+      tipoTaza    : [null, Validators.required],
+      color       : ['#000000', Validators.required],
+      altura      : [null, Validators.required],
+      ancho       : [null, Validators.required],
+      capacidad   : [null, Validators.required],
+      modelo      : [null, Validators.required],
+      material    : [null, Validators.required],
+      stock       : [0, Validators.required]
+    });
+    this.inventarioForm.controls['stock'].disable()
   }
 }

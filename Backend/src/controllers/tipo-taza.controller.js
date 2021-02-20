@@ -59,15 +59,14 @@ exports.getTipoTazaById = function (req, res) {
 exports.addTipoTaza =async (req,res)=>{
     let query = 'INSERT INTO tipo_taza set ?';
     let requestBody = {
-        descripcion: req.body.descripcion,
+        descripcion: req.body.tipoTaza.descripcion,
     };
 
     pool.query(query,[requestBody] ,function (err, result) {
         if (result) {
-            console.log(result);
-            console.log(result.lenght);
             res.status(200).json({
-                mensaje: "Tipo de taza registrado correctamente.",
+                mensaje: "OK",
+                detalles: "Tipo de taza registrado correctamente.",
             });
         } else {
             res.status(400).json({
@@ -82,17 +81,16 @@ exports.addTipoTaza =async (req,res)=>{
 exports.editTipoTaza = function (req, res) {
     const {idTipoTaza} = req.params;
     let requestBody = {
-        descripcion: req.body.descripcion,
+        descripcion: req.body.tipoTaza.descripcion,
     };
 
     let query = 'UPDATE tipo_taza SET ? where idTipoTaza=?';
 
     pool.query(query,[requestBody,idTipoTaza] ,function (err, result) {
         if (result) {
-            console.log(result);
-            console.log(result.lenght);
             res.status(200).json({
-                mensaje: "Se modificó correctamente el tipo de taza con id: "+idTipoTaza,
+                mensaje: "OK",
+                detalles: "Se modificó correctamente el tipo de taza con id: "+idTipoTaza,
             });
         } else {
             res.status(400).json({
@@ -111,10 +109,9 @@ exports.deleteTipoTaza = function (req, res) {
 
     pool.query(query,[idTipoTaza] ,function (err, result) {
         if (result) {
-            console.log(result);
-            console.log(result.lenght);
             res.status(200).json({
-                mensaje: "Se eliminó el tipo de taza con id: "+idTipoTaza,
+                mensaje: "OK",
+                detalles: "Se eliminó el tipo de taza con id: "+idTipoTaza,
             });
         } else {
             res.status(400).json({
