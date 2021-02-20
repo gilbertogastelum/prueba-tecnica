@@ -88,7 +88,6 @@ export class InventarioComponent implements OnInit {
 
   addProducto(){
     let formObj = this.inventarioForm.getRawValue();
-    console.log(JSON.stringify(formObj))
 
     this.inventarioService.addProducto(formObj).subscribe((
       response=>{
@@ -134,7 +133,6 @@ export class InventarioComponent implements OnInit {
 
   editProdcuto(){
     let formObj = this.inventarioForm.getRawValue();
-    console.log(JSON.stringify(formObj));
 
     this.inventarioService.editProducto(formObj).subscribe((
       response=>{

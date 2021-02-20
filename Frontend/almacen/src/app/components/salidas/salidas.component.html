@@ -9,7 +9,7 @@
       </mat-form-field>
     </div>
     <div class="col " style="text-align: right;">
-        <button mat-raised-button color="primary" data-toggle="modal" data-target="#modalProducto" >Añadir Producto</button>
+        <button mat-raised-button color="primary" data-toggle="modal" data-target="#modalSalida" >Registrar salida de almacén</button>
     </div>
 
   </div>
@@ -49,24 +49,6 @@
       <<mat-cell *matCellDef="let element"> {{element.cantidad}} </mat-cell>>
     </ng-container>
 
-    <!-- <ng-container matColumnDef="edit">
-      <mat-header-cell *matHeaderCellDef> Editar </mat-header-cell>
-      <mat-cell *matCellDef="let element"> <button (click)="openEditar(element)"   class="tableButton"data-toggle="modal" data-target="#modalEditProducto">
-        <span class="material-icons">
-          mode
-        </span></button>
-       </mat-cell>
-    </ng-container>
-
-    <ng-container matColumnDef="delete">
-      <mat-header-cell *matHeaderCellDef> Eliminar </mat-header-cell>
-      <mat-cell *matCellDef="let element"> <button class="tableButton" data-toggle="modal" data-target="#deleteModal">
-        <span class="material-icons">
-          delete
-        </span></button>
-      </mat-cell>
-    </ng-container> -->
-
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
   </mat-table>
@@ -78,13 +60,13 @@
 
 
 <!-- MODAL PARA EL REGISTRO DE NUEVOS PRODUCTOS-->
-<div class="modal fade" id="modalProducto" tabindex="-1" role="dialog" aria-labelledby="modalProducto" aria-hidden="true">
+<div class="modal fade" id="modalSalida" tabindex="-1" role="dialog" aria-labelledby="modalSalida" aria-hidden="true"  data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog" role="document">
     <form [formGroup]="salidaForm" (submit)="addSalida()">
     <div class="modal-content">
       <div class="modal-header">
         <h2 class="modal-title" id="exampleModalLabel">Registro salida de almacén</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" (click)="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -137,9 +119,8 @@
         </div>
 
       </div>
-
       <div class="modal-footer">
-        <button mat-raised-button color="danger" data-dismiss="modal">Cancelar</button>
+        <button mat-raised-button color="danger"(click)="clearForm()" data-dismiss="modal">Cancelar</button>
         <button mat-raised-button color="success" type="submit" [disabled]="salidaForm.invalid">Añadir Salida de almacén</button>
       </div>
     </div>

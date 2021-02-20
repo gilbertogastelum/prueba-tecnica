@@ -55,74 +55,42 @@ exports.getEntradaById = function (req, res) {
     });
 };
 
-//AÑADIR UN PRODCUTO AL INVENTARIO
+//PROCESO DE ENTRADA AL INVENTARIO Y SUMA AL INVENTARIO
 exports.addEntrada =async (req,res)=>{
     let query = 'INSERT INTO entrada set ?';
     let requestBody = {
-        descripcion  : req.body.descripcion,
-        idProducto   : req.body.idProducto,
-        fechaEntrada : req.body.fechaEntrada,
-        cantidad     : req.body.cantidad,
+        descripcion  : req.body.entrada.descripcion,
+        idProducto   : req.body.entrada.idProducto,
+        fechaEntrada : req.body.entrada.fechaEntrada,
+        cantidad     : req.body.entrada.cantidad,
     };
+
+    let cantidad= req.body.entrada.cantidad;//OBTENER LA CANTIDAD DE TAZAS QUE ENTRAN A ALMACÉN PARA SUMARLAS AL INVENTARIO
+    let idProducto= req.body.entrada.idProducto;//OBTENER EL ID DEL PRODCUTO QUE ENTRA AL ALMACÉN PARA SUMARLE LA CANTIDAD EN LA TABLA INVENTARIO.
 
     pool.query(query,[requestBody] ,function (err, result) {
         if (result) {
-            console.log(result);
-            console.log(result.lenght);
-            res.status(200).json({
-                mensaje: "Entrada de almacén registrada correctamente.",
+            //EMPIEZA CONSULTA PARA SUMAR AL ALMACÉN LA CANTIDAD DE PRODUCTO ENTRÓ.
+            let queryUpdateInventario = 'UPDATE inventario set stock = stock + ? WHERE idProducto = ?';
+            pool.query(queryUpdateInventario,[cantidad,idProducto],function (err) {
+                if(err){
+                    pool.rollback(()=>{
+                        console.log(err.message);
+                    })
+                    return res.status(400).json({
+                        mensaje: "Ocurrio un error al modificar el almacén",
+                        detalles: err
+                    });
+                }else{
+                    res.status(200).json({
+                        mensaje: "OK",
+                        detalles: "Entrada de almacén registrada correctamente. Se registraron "+cantidad+" Unidades",
+                    });
+                }
             });
         } else {
             res.status(400).json({
                 mensaje: "Ocurrio un error al registrar la entrada de almacén.",
-                detalles: err
-            });
-        }
-    });
-}
-
-//MODIFICAR UNA ENTRADA DE ALMACÉN
-exports.editEntrada = function (req, res) {
-    const {idEntrada} = req.params;
-    let requestBody = {
-        descripcion  : req.body.descripcion,
-        idProducto   : req.body.idProducto,
-        fechaEntrada : req.body.fechaEntrada,
-        cantidad     : req.body.cantidad,
-    };
-
-    let query = 'UPDATE entrada SET ? where idEntrada=?';
-
-    pool.query(query,[requestBody,idEntrada] ,function (err, result) {
-        if (result) {
-            console.log(result);
-            console.log(result.lenght);
-            res.status(200).json({
-                mensaje: "Se modificó correctamente la entrada de almacén con id: "+idEntrada,
-            });
-        } else {
-            res.status(400).json({
-                mensaje: "Ocurrio un error al registrar la entrada de almacén.",
-                detalles: err
-            });
-        }
-    });
-}
-
-//ELIMINAR UNA ENTRADA DE ALMACEN
-exports.deleteEntrada = function (req, res) {
-    console.log(req.params)
-    const {idEntrada} = req.params;
-    let query = 'DELETE FROM entrada WHERE idEntrada = ?';
-
-    pool.query(query,[idEntrada] ,function (err, result) {
-        if (result) {
-            res.status(200).json({
-                mensaje: "Se eliminó la entrada de almacén con id: "+idEntrada,
-            });
-        } else {
-            res.status(400).json({
-                mensaje: "Ocurrio un error al eliminar la entrada de almacén.",
                 detalles: err
             });
         }

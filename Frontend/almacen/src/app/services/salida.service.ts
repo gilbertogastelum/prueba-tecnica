@@ -26,16 +26,4 @@ export class SalidaService {
         salida: salida,
       });
   }
-
-  editSalida(salida:Salida):Observable <any>{
-    return this.http
-      .put(`${this.endpointUrl}/editSalida/${salida.idSalida}`, {
-        salida: salida,
-      });
-  }
-
-  deleteProducto(salida:Salida):Observable <any>{
-    return this.http
-      .delete(`${this.endpointUrl}/deleteSalida/${salida.idSalida}`);
-  }
 }

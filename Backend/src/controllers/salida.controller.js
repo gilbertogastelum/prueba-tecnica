@@ -56,7 +56,7 @@ exports.getSalidaById = function (req, res) {
     });
 };
 
-//AÑADIR UNA SALIDA DE ALMACÉN
+//PROCESO DE SALIDA DE ALMACÉN Y RESTAR  STOCK DEL INVENTARIO.
 exports.addSalida = function (req,res){
     let query = 'INSERT INTO salida set ?';
     let requestBody = {
@@ -67,17 +67,18 @@ exports.addSalida = function (req,res){
     };
 
     let cantidad= req.body.salida.cantidad;//OBTENER LA CANTIDAD DE TAZAS QUE SALEN DE ALMACÉN PARA RESTARLAS DEL INVENTARIO
-    let idTipoTaza  = req.body.salida.idTipoTaza;/*OBTENER EL TIPO DE TAZA PARA DETERMINAR QUE TIPO DE TAZA SE REGALA EN CASO DE QUE CUMPLA
+    let idTipoTaza  = req.body.salida.idTipoTaza;/*OBTENER EL TIPO DE TAZA PARA DETERMINAR CUANTAS SE REGALARÁN EN CASO DE QUE CUMPLA
                                                    CON LOS CRITERIOS DE LA PROMCIÓN */
-    let tazasRegaladas;
-    let idProducto= req.body.salida.idProducto;
-    let idProductoPromocion;
-    let stockProductoPromocion;
+
+    let tazasRegaladas;//PARA ALMACENAR EL NÚMERO DE TAZAS A REGALAR
+    let idProducto= req.body.salida.idProducto;//PARA ALMACENAR EL ID DEL PRODUCTO DEL INVENTARIO PARA RESTARLE LA SALIDA
+    let idProductoPromocion;//PARA OTBENER EL ID DEL PRODUCTO QUE SE PUEDE REGALAR EN BASE AL QUE TENGA MAYOR STOCK
+    let stockProductoPromocion;//PARA OTBENER EL STOCK DEL PRODUCTO QUE SE PUEDE REGALAR.
 
     pool.query(query,[requestBody] ,function (err, result) {
         if (result) {
-            
-            //EMPIEZA QUERY PARA RESTAR DEL ALMACÉN LA CANTIDAD DE PRODUCTO QUE SALIÓ.
+
+            //EMPIEZA CONSULTA PARA RESTAR DEL ALMACÉN LA CANTIDAD DE PRODUCTO QUE SALIÓ.
             let queryUpdateInventario = 'UPDATE inventario set stock = stock - ? WHERE idProducto = ?';
             pool.query(queryUpdateInventario,[cantidad,idProducto],function (err) {
                 if(err){
@@ -91,7 +92,6 @@ exports.addSalida = function (req,res){
                 }
             });
 
-
             let auxModTazas=Math.trunc((cantidad/=10));
             if(auxModTazas>=1){
                 //COMPROBAR SI SON TAZAS DE CALIDAD ALTA
@@ -102,10 +102,8 @@ exports.addSalida = function (req,res){
                     tazasRegaladas=2*auxModTazas;
                 }
 
-                console.log("TAZAS A REGALAR : "+tazasRegaladas);
                 //EMPIEZA QUERY PARA OBTENER DEL INVENTARIO EL PRODUCTO DE CÁLIDAD BAJA PARA APLICAR LA PROMOCIÓN
-                
-                //CON ESTA CONSULA ES PARA OBTENER EL ID DEL PRODUCTO DE BAJA CALIDAD CON MAYOR STOCK PARA APLICAR LA PROMCIÓN
+                //CON ESTA CONSULTA OBTENDREMOS ID DEL PRODUCTO DE BAJA CALIDAD CON MAYOR STOCK PARA APLICAR LA PROMCIÓN
                 let querySelectInventarioCalidadBaja="SELECT stock, idProducto FROM inventario WHERE tipoTaza=2 ORDER BY stock DESC LIMIT 1";
                 
                 pool.query(querySelectInventarioCalidadBaja,function (err,result) {
@@ -120,14 +118,12 @@ exports.addSalida = function (req,res){
                     }else{
                         stockProductoPromocion= result[0].stock;
                         idProductoPromocion=result[0].idProducto;
-                        console.log("ID DEL PRODUCTO A REGALAR: ",idProductoPromocion);
-                        console.log("STOCK DEL PRODUCTO A REGALAR :",stockProductoPromocion);
 
                          //COMPRBAMOS QUE EL STOCK DEL PRODCUTO QUE SE REGALA EN LA PROMOCIÓN SEA MAYOR A LA CANTIDAD DE TAZAS A REGALAR.
                         if (stockProductoPromocion>tazasRegaladas){
                             //CON ESTA CONSULTA RESTAMOS STOCK DEL PRODUCTO QUE SE REGALÁ POR PROMOCIÓN
                             let queryUpdateStockProductoPromocion="UPDATE inventario SET stock = stock -? WHERE idProducto = ?";
-                            pool.query(queryUpdateStockProductoPromocion,[tazasRegaladas,idProductoPromocion],function (err,result) {
+                            pool.query(queryUpdateStockProductoPromocion,[tazasRegaladas,idProductoPromocion],function (err) {
                                 if(err){
                                     pool.rollback(()=>{
                                         console.log(err.message);

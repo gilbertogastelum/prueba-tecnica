@@ -36,19 +36,19 @@
 
     <!-- COLUMNA ALTURA -->
     <ng-container matColumnDef="altura">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Altura </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Altura(cm)</mat-header-cell>
       <<mat-cell *matCellDef="let element"> {{element.altura}} </mat-cell>>
     </ng-container>
 
     <!-- COLUMNA ANCHO -->
     <ng-container matColumnDef="ancho">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Ancho </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Ancho(cm)</mat-header-cell>
       <mat-cell *matCellDef="let element"> {{element.ancho}} </mat-cell>
     </ng-container>
 
     <!-- COLUMNA CAPACIDAD -->
     <ng-container matColumnDef="capacidad">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Capacidad </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Capacidad(ml)</mat-header-cell>
       <mat-cell *matCellDef="let element"> {{element.capacidad}} </mat-cell>
     </ng-container>
 
@@ -66,7 +66,7 @@
 
     <!-- COLUMNA STOCK -->
     <ng-container matColumnDef="stock">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Stock </mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Stock(pz) </mat-header-cell>
       <mat-cell *matCellDef="let element"> {{element.stock}} </mat-cell>
     </ng-container>
 

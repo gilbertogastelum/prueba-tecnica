@@ -132,7 +132,7 @@ export class SalidasComponent implements OnInit {
     this.dataSource_Salidas.filter = filterValue.trim().toLowerCase();
   }
 
-  clearForm(): void{
+  clearForm(){
     this.salidaForm.reset();
   }
 
