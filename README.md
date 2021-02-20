@@ -15,7 +15,7 @@ Y lo iniciamos con el comando
 npm run server
 ```
 
-## Requisitos Frotnend
+## Requisitos Frontend
 
 En el directorio "prueba-tecnica/almacen" ejecutamos el siguiente comando
 
