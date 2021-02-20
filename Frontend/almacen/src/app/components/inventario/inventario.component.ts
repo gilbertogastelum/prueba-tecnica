@@ -48,18 +48,7 @@ export class InventarioComponent implements OnInit {
   ngOnInit(): void {
     this.getInventario();
     this.getTiposTaza();
-    this.inventarioForm = this.formBuilder.group({
-      descripcion : [null,],
-      tipoTaza    : [null, Validators.required],
-      color       : ['#000000', Validators.required],
-      altura      : [null, Validators.required],
-      ancho       : [null, Validators.required],
-      capacidad   : [null, Validators.required],
-      modelo      : [null, Validators.required],
-      material    : [null, Validators.required],
-      stock       : [0, Validators.required]
-    });
-    this.inventarioForm.controls['stock'].disable()
+    this.initForm();
   }
 
   async getInventario(){
@@ -93,9 +82,10 @@ export class InventarioComponent implements OnInit {
       response=>{
         if (response.mensaje=="OK"){
           this.getInventario();
-          this.clearForm();
+          this.initForm();
           $('#modalProducto').modal('hide');
           this.toastr.success(response.detalles,'Correcto')
+
         }else{
           this.toastr.error(response.mensaje, "Error");
         }
@@ -103,20 +93,13 @@ export class InventarioComponent implements OnInit {
     ));
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource_Inventario.filter = filterValue.trim().toLowerCase();
-  }
-
-
   openEditar(data: any) {
     for (let entry of this.tipoTaza) {
       if (entry.descripcion==data.tipoTaza){
         this.selectedTipo=entry.idTipoTaza;
       }
     }
-
-    this.inventarioForm.controls['stock'].disable()
+    //ASIGNAR LOS VALORES AL FORM DEL PRODUCTO SELECCIONADO
     this.inventarioForm = this.formBuilder.group({
       idProducto  : [data.idProducto, [Validators.required,]],
       descripcion : [data.descripcion, [Validators.required,]],
@@ -127,8 +110,10 @@ export class InventarioComponent implements OnInit {
       capacidad   : [data.capacidad, Validators.required],
       modelo      : [data.modelo, Validators.required],
       material    : [data.material, Validators.required],
-      stock       : [data.stock, Validators.required,]
+      stock       : [data.stock,]
     });
+    this.inventarioForm.markAsTouched();
+    this.inventarioForm.controls['stock'].disable()
   }
 
   editProdcuto(){
@@ -138,7 +123,7 @@ export class InventarioComponent implements OnInit {
       response=>{
         if (response.mensaje=="OK"){
           this.getInventario();
-          this.clearForm();
+          this.initForm();
           $('#modalEditProducto').modal('hide');
           this.toastr.success(response.detalles,'Correcto')
         }else{
@@ -161,6 +146,7 @@ export class InventarioComponent implements OnInit {
       response=>{
         if (response.mensaje=="OK"){
           this.getInventario();
+          this.initForm();
           $('#deleteModal').modal('hide');
           this.toastr.info(response.detalles, "Correcto");
         }else{
@@ -170,8 +156,9 @@ export class InventarioComponent implements OnInit {
     ));
   }
 
-  clearForm(){
+  async initForm(){
     this.inventarioForm = this.formBuilder.group({
+      idProducto  : [null, ],
       descripcion : [null,],
       tipoTaza    : [null, Validators.required],
       color       : ['#000000', Validators.required],
@@ -180,8 +167,15 @@ export class InventarioComponent implements OnInit {
       capacidad   : [null, Validators.required],
       modelo      : [null, Validators.required],
       material    : [null, Validators.required],
-      stock       : [0, Validators.required]
+      stock       : [0]
     });
+    this.inventarioForm.markAsUntouched();
     this.inventarioForm.controls['stock'].disable()
   }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource_Inventario.filter = filterValue.trim().toLowerCase();
+  }
+
 }

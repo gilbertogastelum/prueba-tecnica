@@ -65,7 +65,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2 class="modal-title" id="exampleModalLabel">Registro tipo de taza</h2>
-        <button type="button" (click)="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" (click)="initForm()" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -83,7 +83,7 @@
 
       </div>
       <div class="modal-footer">
-        <button mat-raised-button color="danger"(click)="clearForm()" data-dismiss="modal">Cancelar</button>
+        <button mat-raised-button color="danger"(click)="initForm()" data-dismiss="modal">Cancelar</button>
         <button mat-raised-button color="success" type="submit" [disabled]="tipoTazaForm.invalid">Añadir tipo de taza</button>
       </div>
     </div>
@@ -99,7 +99,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="modalEditTipoTaza">Modificar tipo de taza</h5>
-          <button type="button" (click)="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" (click)="initForm()" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -115,7 +115,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button mat-raised-button color="danger" (click)="clearForm()" data-dismiss="modal">Cancelar</button>
+          <button mat-raised-button color="danger" (click)="initForm()" data-dismiss="modal">Cancelar</button>
           <button mat-raised-button color="success" type="submit">Guardar</button>
         </div>
       </div>
@@ -131,7 +131,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2 class="modal-title" id="deleteModal">Eliminar Tipo de taza</h2>
-          <button type="button" (click)="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" (click)="initForm()" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -139,7 +139,7 @@
           ¿Seguro que deseas eliminar el tipo de taza?
         </div>
         <div class="modal-footer">
-          <button mat-raised-button color="primary" (click)="clearForm()" data-dismiss="modal" >Cancelar</button>
+          <button mat-raised-button color="primary" (click)="initForm()" data-dismiss="modal" >Cancelar</button>
           <button mat-raised-button color="danger" type="submit">Eliminar</button>
         </div>
       </div>

@@ -40,10 +40,7 @@ export class TipoTazaComponent implements OnInit {
 
   ngOnInit(): void {
     this.getTiposTaza();
-
-    this.tipoTazaForm = this.formBuilder.group({
-      descripcion: [null,Validators.required]
-    });
+    this.initForm();
   }
 
   async getTiposTaza(){
@@ -65,7 +62,7 @@ export class TipoTazaComponent implements OnInit {
       response=>{
         if (response.mensaje=="OK"){
           this.getTiposTaza();
-          this.clearForm();
+          this.initForm();
           $('#modalTipo').modal('hide');
           this.toastr.success(response.detalles,'Correcto')
         }else{
@@ -76,6 +73,7 @@ export class TipoTazaComponent implements OnInit {
   }
 
   openEditar(data: any){
+    //ASIGNAR LOS VALORES AL FORM DEL TIPO DE TAZA SELECCIONADO
     this.tipoTazaForm = this.formBuilder.group({
       idTipoTaza  : [data.idTipoTaza,[Validators.required]],
       descripcion : [data.descripcion, [Validators.required,]],
@@ -90,7 +88,7 @@ export class TipoTazaComponent implements OnInit {
       response=>{
         if (response.mensaje=="OK"){
           this.getTiposTaza();
-          this.clearForm();
+          this.initForm();
           $('#modalEditTipoTaza').modal('hide');
           this.toastr.success(response.detalles,'Correcto')
         }else{
@@ -114,6 +112,7 @@ export class TipoTazaComponent implements OnInit {
       response=>{
         if (response.mensaje=="OK"){
           this.getTiposTaza();
+          this.initForm();
           $('#deleteModal').modal('hide');
           this.toastr.info(response.detalles, "Correcto");
         }else{
@@ -128,10 +127,12 @@ export class TipoTazaComponent implements OnInit {
     this.dataSource_TipoTaza.filter = filterValue.trim().toLowerCase();
   }
 
-  clearForm(){
+  initForm(){
     this.tipoTazaForm = this.formBuilder.group({
-      descripcion: [null,Validators.required]
+      idTipoTaza  : [null, ],
+      descripcion : [null,Validators.required],
     });
+    this.tipoTazaForm.markAsUntouched();
   }
 
 
